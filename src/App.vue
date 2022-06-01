@@ -68,7 +68,6 @@ export default {
     saveData(data) {
       if (data.selectionValue === "1") {
         this.admins.push(data);
-
       } else if (data.selectionValue === "2") {
         this.students.push(data);
       } else {

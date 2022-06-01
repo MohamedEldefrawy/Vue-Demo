@@ -34,7 +34,8 @@
       </div>
       <div class="row mb-2">
         <div class=" col-12 input-group mb-3">
-          <input type="button" @click="$emit('onSendClicked',inputData)" class="btn btn-dark" value="send">
+          <input type="button" @click="$emit('onSendClicked',this.inputData),refresh" class="btn btn-dark"
+                 value="send">
         </div>
       </div>
     </div>
@@ -52,10 +53,17 @@ export default {
         address: "",
         age: 0,
         selectionValue: 0
-      },
+      }
     }
   },
-  methods: {}
+  methods: {
+    refresh() {
+      this.inputData.name = "";
+      this.inputData.address = "";
+      this.inputData.age = 0;
+      this.inputData.selectionValue = 0;
+    }
+  }
 }
 </script>
 <style scoped>
