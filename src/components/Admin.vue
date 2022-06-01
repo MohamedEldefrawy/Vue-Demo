@@ -1,32 +1,43 @@
 <template>
-  <table class="table table-bordered table-hover text-center">
-    <thead>
-    <tr>
-      <th>Name</th>
-      <th>Address</th>
-      <th>Age</th>
-      <th>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    <template v-for="(admin,index) in admins" :key="index">
-      <tr>
-        <td>{{ admin.name }}</td>
-        <td>{{ admin.address }}</td>
-        <td>{{ admin.age }}</td>
-        <td>
-          <button @click="$emit('onDelete',{'index':index,'type':'admin'})" class="btn btn-danger">Delete</button>
-        </td>
-      </tr>
-    </template>
-    </tbody>
-  </table>
+  <div>
+    <DataTable :value="this.admins" :paginator="true" :rows="10"
+               paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+               :rowsPerPageOptions="[10,20,50]" responsiveLayout="scroll"
+               currentPageReportTemplate="Showing {first} to {last} of {totalRecords}">
+      <Column field="id" header="ID"></Column>
+      <Column field="first_name" header="First Name"></Column>
+      <Column field="last_name" header="Last Name"></Column>
+      <Column field="email" header="Email"></Column>
+      <Column field="gender" header="Gender"></Column>
+      <ColumnGroup>
+        <
+      </ColumnGroup>
+      <template #paginatorstart>
+        <Button type="button" icon="pi pi-refresh" class="p-button-text"/>
+      </template>
+      <template #paginatorend>
+        <Button type="button" icon="pi pi-cloud" class="p-button-text"/>
+      </template>
+    </DataTable>
+  </div>
 </template>
 
 <script>
+import AdminsServices from '../services/AdminsServices.mjs'
+
 export default {
   name: "adminComponent",
-  props: ['admins'],
+  data() {
+    return {
+      admins: []
+    }
+  },
+  created() {
+    let adminService = new AdminsServices();
+    adminService.getAdmins().then(data => {
+      this.admins = data;
+    });
+  }
 }
 </script>
 
