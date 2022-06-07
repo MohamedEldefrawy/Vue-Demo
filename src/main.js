@@ -21,10 +21,10 @@ import Dialog from "primevue/dialog";
 //optional for column grouping
 
 const routes = [
-    {path: '/', component: HomeComponent},
-    {path: '/admins', component: adminComponent},
-    {path: '/admins/:id', component: adminComponent},
-    {path: '/admins/create', component: CreateComponent},
+    {path: '/', component: HomeComponent, name: "home"},
+    {path: '/admins', component: adminComponent, name: "admins"},
+    {path: '/admins/:id', component: adminComponent, name: "select-admin"},
+    {path: '/admins/create', component: CreateComponent, name: "create"},
 ]
 
 const router = createRouter({

@@ -1,7 +1,7 @@
 <template>
   <div class="p-4 m-2">
     <Button label="New" icon="pi pi-plus" class="p-button-success m-5" @click="openNew"/>
-    <DataTable :value="this.admins" :paginator="true" :rows="10"
+    <DataTable :value="admins" :paginator="true" :rows="10"
                paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                :rowsPerPageOptions="[10,20,50]" responsiveLayout="scroll"
                currentPageReportTemplate="Showing {first} to {last} of {totalRecords}">
@@ -28,47 +28,75 @@
 
 <script>
 import AdminsServices from '../services/AdminsServices.mjs'
-// eslint-disable-next-line no-unused-vars
-import axiFos from "axios";
+import {onMounted, ref} from 'vue';
+import {useRoute, useRouter} from "vue-router";
 
 export default {
   name: "adminComponent",
-  data() {
-    return {
-      admins: [],
-      admin: {},
-      productDialog: false,
-      deleteProductDialog: false,
-      adminService: new AdminsServices(),
-    }
-  },
-  created() {
-    this.adminService.getAdmins().then(data => {
-      this.admins = data;
-    });
-  },
-  methods: {
-    editProduct(product) {
-      this.product = {...product};
-      this.adminDialog = true;
-    },
-    confirmDeleteProduct(product) {
-      this.product = product;
-      console.log(this.product);
-      this.deleteAdminDialog = true;
-    },
-    deleteProduct(admin) {
+  setup() {
+    // eslint-disable-next-line no-undef
+    const admins = ref([]);
+
+    // eslint-disable-next-line no-undef
+    let admin = ref({});
+
+    // eslint-disable-next-line no-undef
+    let productDialog = ref(false);
+
+    // eslint-disable-next-line no-undef
+    let deleteProductDialog = ref(false);
+
+    const router = useRouter()
+    const route = useRoute()
+
+
+    function deleteProduct(admin) {
       this.admin = admin
-      this.adminService.deleteAdmin(admin.id).then(response => {
+      new AdminsServices().deleteAdmin(admin.id).then(response => {
         if (response === 200) {
           this.admins = this.admins.filter(val => val.id !== this.admin.id);
           alert("deleted successfully..");
         } else
           alert("Couldn't delete record..");
       });
-    },
-    openNew() {
-      this.$router.push('/admins/create')
+    }
+
+    function editProduct(product) {
+      this.product = {...product};
+      this.adminDialog = true;
+    }
+
+    function confirmDeleteProduct(product) {
+      this.product = product;
+      console.log(this.product);
+      this.deleteAdminDialog = true;
+    }
+
+    function openNew() {
+      router.push({
+        name: 'create',
+      })
+    }
+
+    onMounted(() => {
+      new AdminsServices().getAdmins().then(data => {
+        admins.value.push(...data);
+      }).catch((error) => {
+        alert(error);
+      });
+    });
+
+    return {
+      admins,
+      admin,
+      productDialog,
+      deleteProductDialog,
+      deleteProduct,
+      editProduct,
+      confirmDeleteProduct,
+      openNew,
+      route,
+      router
     }
   }
 }
