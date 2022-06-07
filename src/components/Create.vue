@@ -1,10 +1,10 @@
 <template>
   <div class="d-flex flex-column justify-content-center align-items-center w-100 p-5">
-    <InputText placeholder="ID" type="number" v-model="this.newAdmin.id" class="w-50 m-2"/>
-    <InputText placeholder="First Name" type="text" v-model="this.newAdmin.first_name" class="w-50 m-2"/>
-    <InputText placeholder="Last Name" type="text" v-model="this.newAdmin.last_name" class="w-50 m-2"/>
-    <InputText placeholder="Email" type="email" v-model="this.newAdmin.email" class="w-50 m-2"/>
-    <Dropdown v-model="this.newAdmin.gender" :options="genderOptions" optionLabel="name"
+    <InputText placeholder="ID" type="number" v-model="newAdmin.id" class="w-50 m-2"/>
+    <InputText placeholder="First Name" type="text" v-model="newAdmin.first_name" class="w-50 m-2"/>
+    <InputText placeholder="Last Name" type="text" v-model="newAdmin.last_name" class="w-50 m-2"/>
+    <InputText placeholder="Email" type="email" v-model="newAdmin.email" class="w-50 m-2"/>
+    <Dropdown v-model="newAdmin.gender" :options="genderOption" optionLabel="name"
               placeholder="Gender" class="w-50 m-2"/>
     <Button label="Submit" @click="submit"/>
   </div>
@@ -12,39 +12,52 @@
 
 <script>
 import AdminsServices from "@/services/AdminsServices.mjs";
-// eslint-disable-next-line no-unused-vars
-import axiFos from "axios";
+import {useRoute, useRouter} from "vue-router";
+
+import {ref} from 'vue';
 
 export default {
   name: "CreateComponent",
-  data() {
-    return {
-      adminService: new AdminsServices(),
-      newAdmin: {
-        id: 0,
-        first_name: "",
-        last_name: "",
-        email: "",
-        gender: ""
-      },
-      genderOptions: [{
+  setup() {
+    const router = useRouter()
+    const route = useRoute()
+
+    let newAdmin = ref({
+      id: 0,
+      first_name: "",
+      last_name: "",
+      email: "",
+      gender: ""
+    })
+
+    const genderOption = ref([
+      {
         name: "Male",
         value: "Male"
       }, {
         name: "Female",
         value: "Female"
-      }]
-    }
-  },
-  methods: {
-    submit() {
-      this.newAdmin.gender = this.newAdmin.gender.name;
-      this.adminService.createAdmin(this.newAdmin).then(response => {
+      }
+    ])
+
+    function submit() {
+      newAdmin.value.gender = newAdmin.value.gender.name;
+      new AdminsServices().createAdmin(newAdmin.value).then(response => {
         if (response === 201)
-          this.$router.push('/admins');
+          router.push({
+            name: 'admins',
+          })
         else
           alert("couldn't create new admin")
       })
+    }
+
+    return {
+      newAdmin,
+      genderOption,
+      submit,
+      route,
+      router
     }
   }
 }
